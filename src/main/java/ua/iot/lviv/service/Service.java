@@ -2,19 +2,18 @@ package ua.iot.lviv.service;
 
 import ua.iot.lviv.DAO.DAO;
 
-import java.sql.SQLException;
 import java.util.List;
 
-public interface Service<T> {
-    List<T> getAll() throws SQLException;
+public interface Service<T, ID> {
+    List<T> getAll();
 
-    T getById(Integer id) throws SQLException;
+    T getById(ID id);
 
-    int create(T entity) throws SQLException;
+    void create(T entity);
 
-    int update(T entity) throws SQLException;
+    void update(T entity);
 
-    int delete(Integer id) throws SQLException;
+    void delete(ID id);
 
-    DAO<T, Integer> getDAO();
+    DAO<T, ID> getDAO();
 }

@@ -1,14 +1,14 @@
 package ua.iot.lviv.controller.implementation;
 
-import ua.iot.lviv.model.Treatment;
+import ua.iot.lviv.model.TreatmentEntity;
 import ua.iot.lviv.service.Service;
 import ua.iot.lviv.service.implementation.TreatmentService;
 
-public class TreatmentController extends ControllerImpl<Treatment> {
-    private Service<Treatment> serviceService = new TreatmentService();
+public class TreatmentController extends ControllerImpl<TreatmentEntity, Long> {
+    final Service<TreatmentEntity, Long> service = new TreatmentService();
 
     @Override
-    public Service<Treatment> getService() {
-        return serviceService;
+    public Service<TreatmentEntity, Long> getService() {
+        return service;
     }
 }
