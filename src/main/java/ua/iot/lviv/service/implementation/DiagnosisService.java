@@ -1,15 +1,19 @@
 package ua.iot.lviv.service.implementation;
 
-import ua.iot.lviv.DAO.DAO;
-import ua.iot.lviv.DAO.implementation.DiagnosisDAO;
-import ua.iot.lviv.model.DiagnosisEntity;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Service;
+import ua.iot.lviv.domain.implementation.DiagnosisEntity;
+import ua.iot.lviv.repository.DiagnosisRepository;
 
-public class DiagnosisService extends ServiceImpl<DiagnosisEntity, Long> {
-    private final DAO<DiagnosisEntity, Long> diagnosisDAO = new DiagnosisDAO();
+@Service
+public class DiagnosisService extends ServiceImpl<DiagnosisEntity> {
+    @Autowired
+    DiagnosisRepository diagnosisRepository;
 
     @Override
-    public DAO<DiagnosisEntity, Long> getDAO() {
-        return diagnosisDAO;
+    public JpaRepository<DiagnosisEntity, Long> getRepository() {
+        return diagnosisRepository;
     }
 }
 

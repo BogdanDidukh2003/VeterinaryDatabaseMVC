@@ -1,11 +1,13 @@
-package ua.iot.lviv.model;
+package ua.iot.lviv.domain.implementation;
+
+import ua.iot.lviv.domain.Entity;
 
 import javax.persistence.*;
 import java.sql.Time;
 
-@Entity
+@javax.persistence.Entity
 @Table(name = "schedule", schema = "bogdan_didukh", catalog = "")
-public class ScheduleEntity {
+public class ScheduleEntity implements Entity {
     private Long id;
     private Time timeStart;
     private Time timeEnd;

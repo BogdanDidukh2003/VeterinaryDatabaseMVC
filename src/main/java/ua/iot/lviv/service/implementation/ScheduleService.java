@@ -1,16 +1,20 @@
 package ua.iot.lviv.service.implementation;
 
-import ua.iot.lviv.DAO.DAO;
-import ua.iot.lviv.DAO.implementation.ScheduleDAO;
-import ua.iot.lviv.model.ScheduleEntity;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Service;
+import ua.iot.lviv.domain.implementation.ScheduleEntity;
+import ua.iot.lviv.repository.ScheduleRepository;
 
 
-public class ScheduleService extends ServiceImpl<ScheduleEntity, Long> {
-    private final DAO<ScheduleEntity, Long> clientDAO = new ScheduleDAO();
+@Service
+public class ScheduleService extends ServiceImpl<ScheduleEntity> {
+    @Autowired
+    ScheduleRepository scheduleRepository;
 
     @Override
-    public DAO<ScheduleEntity, Long> getDAO() {
-        return clientDAO;
+    public JpaRepository<ScheduleEntity, Long> getRepository() {
+        return scheduleRepository;
     }
 }
 

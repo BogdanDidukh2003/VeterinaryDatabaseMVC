@@ -1,10 +1,12 @@
-package ua.iot.lviv.model;
+package ua.iot.lviv.domain.implementation;
+
+import ua.iot.lviv.domain.Entity;
 
 import javax.persistence.*;
 
-@Entity
+@javax.persistence.Entity
 @Table(name = "diagnosis", schema = "bogdan_didukh", catalog = "")
-public class DiagnosisEntity {
+public class DiagnosisEntity implements Entity {
     private Long id;
     private String diagnosis;
     private String treatment;

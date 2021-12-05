@@ -1,19 +1,23 @@
 package ua.iot.lviv.service;
 
-import ua.iot.lviv.DAO.DAO;
+import org.springframework.data.jpa.repository.JpaRepository;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
-public interface Service<T, ID> {
-    List<T> getAll();
+public interface Service<T> {
+    JpaRepository<T, Long> getRepository();
 
-    T getById(ID id);
+    List<T> findAll();
 
-    void create(T entity);
+    T find(Long id);
 
-    void update(T entity);
+    @Transactional
+    T create(T entity);
 
-    void delete(ID id);
+    @Transactional
+    T update(T entity);
 
-    DAO<T, ID> getDAO();
+    @Transactional
+    T delete(Long id);
 }

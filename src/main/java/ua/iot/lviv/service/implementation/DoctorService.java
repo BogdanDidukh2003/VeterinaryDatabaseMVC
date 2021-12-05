@@ -1,15 +1,20 @@
 package ua.iot.lviv.service.implementation;
 
-import ua.iot.lviv.DAO.DAO;
-import ua.iot.lviv.DAO.implementation.DoctorDAO;
-import ua.iot.lviv.model.DoctorEntity;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Service;
+import ua.iot.lviv.domain.implementation.DoctorEntity;
+import ua.iot.lviv.repository.DoctorRepository;
 
-public class DoctorService extends ServiceImpl<DoctorEntity, Long> {
-    private final DAO<DoctorEntity, Long> doctorDAO = new DoctorDAO();
+
+@Service
+public class DoctorService extends ServiceImpl<DoctorEntity> {
+    @Autowired
+    DoctorRepository doctorRepository;
 
     @Override
-    public DAO<DoctorEntity, Long> getDAO() {
-        return doctorDAO;
+    public JpaRepository<DoctorEntity, Long> getRepository() {
+        return doctorRepository;
     }
 }
 

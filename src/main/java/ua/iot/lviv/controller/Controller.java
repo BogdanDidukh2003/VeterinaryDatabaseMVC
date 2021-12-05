@@ -1,20 +1,20 @@
 package ua.iot.lviv.controller;
 
+import org.springframework.http.ResponseEntity;
 import ua.iot.lviv.service.Service;
 
+import java.util.List;
 
-public interface Controller<T, ID> {
-    void getAll();
+public interface Controller<T> {
+    Service<T> getService();
 
-    void getById(ID id);
+    ResponseEntity<List<T>> findAll();
 
-    void create(T entity);
+    ResponseEntity<T> findById(Long id);
 
-    void update(T entity);
+    ResponseEntity<T> create(T entity);
 
-    void delete(ID id);
+    ResponseEntity<T> update(Long id, T entity);
 
-    Service<T, ID> getService();
-
-    T getEntityById(ID id);
+    ResponseEntity<T> delete(Long id);
 }

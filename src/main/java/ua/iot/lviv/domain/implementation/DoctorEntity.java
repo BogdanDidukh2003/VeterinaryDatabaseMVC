@@ -1,23 +1,29 @@
-package ua.iot.lviv.model;
+package ua.iot.lviv.domain.implementation;
+
+import ua.iot.lviv.domain.Entity;
 
 import javax.persistence.*;
 
-@Entity
-@Table(name = "client", schema = "bogdan_didukh", catalog = "")
-public class ClientEntity {
+@javax.persistence.Entity
+@Table(name = "doctor", schema = "bogdan_didukh", catalog = "")
+public class DoctorEntity implements Entity {
     private Long id;
     private String firstName;
     private String name;
     private String lastName;
+    private Integer yearOfBirth;
+    private String speciality;
 
-    public ClientEntity() {
+    public DoctorEntity() {
     }
 
-    public ClientEntity(Long id, String firstName, String name, String lastName) {
+    public DoctorEntity(Long id, String firstName, String name, String lastName, Integer yearOfBirth, String speciality) {
         this.id = id;
         this.firstName = firstName;
         this.name = name;
         this.lastName = lastName;
+        this.yearOfBirth = yearOfBirth;
+        this.speciality = speciality;
     }
 
     @Id
@@ -60,17 +66,39 @@ public class ClientEntity {
         this.lastName = lastName;
     }
 
+    @Basic
+    @Column(name = "year_of_birth")
+    public Integer getYearOfBirth() {
+        return yearOfBirth;
+    }
+
+    public void setYearOfBirth(Integer yearOfBirth) {
+        this.yearOfBirth = yearOfBirth;
+    }
+
+    @Basic
+    @Column(name = "speciality")
+    public String getSpeciality() {
+        return speciality;
+    }
+
+    public void setSpeciality(String speciality) {
+        this.speciality = speciality;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        ClientEntity that = (ClientEntity) o;
+        DoctorEntity that = (DoctorEntity) o;
 
         if (id != null ? !id.equals(that.id) : that.id != null) return false;
         if (firstName != null ? !firstName.equals(that.firstName) : that.firstName != null) return false;
         if (name != null ? !name.equals(that.name) : that.name != null) return false;
         if (lastName != null ? !lastName.equals(that.lastName) : that.lastName != null) return false;
+        if (yearOfBirth != null ? !yearOfBirth.equals(that.yearOfBirth) : that.yearOfBirth != null) return false;
+        if (speciality != null ? !speciality.equals(that.speciality) : that.speciality != null) return false;
 
         return true;
     }
@@ -81,16 +109,20 @@ public class ClientEntity {
         result = 31 * result + (firstName != null ? firstName.hashCode() : 0);
         result = 31 * result + (name != null ? name.hashCode() : 0);
         result = 31 * result + (lastName != null ? lastName.hashCode() : 0);
+        result = 31 * result + (yearOfBirth != null ? yearOfBirth.hashCode() : 0);
+        result = 31 * result + (speciality != null ? speciality.hashCode() : 0);
         return result;
     }
 
     @Override
     public String toString() {
-        return "ClientEntity{" +
+        return "DoctorEntity{" +
                 "id=" + id +
                 ", firstName='" + firstName + '\'' +
                 ", name='" + name + '\'' +
                 ", lastName='" + lastName + '\'' +
+                ", yearOfBirth=" + yearOfBirth +
+                ", speciality='" + speciality + '\'' +
                 '}';
     }
 }
