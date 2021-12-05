@@ -2,15 +2,15 @@ package ua.iot.lviv.service.implementation;
 
 import ua.iot.lviv.DAO.DAO;
 import ua.iot.lviv.DAO.implementation.TreatmentDAO;
-import ua.iot.lviv.model.Treatment;
+import ua.iot.lviv.model.TreatmentEntity;
 
-public class TreatmentService extends ServiceImpl<Treatment> {
-    private final DAO<Treatment, Integer> TreatmentDAO = new TreatmentDAO();
+
+public class TreatmentService extends ServiceImpl<TreatmentEntity, Long> {
+    private final DAO<TreatmentEntity, Long> clientDAO = new TreatmentDAO();
 
     @Override
-    public DAO<Treatment, Integer> getDAO() {
-        return TreatmentDAO;
+    public DAO<TreatmentEntity, Long> getDAO() {
+        return clientDAO;
     }
 }
-
 

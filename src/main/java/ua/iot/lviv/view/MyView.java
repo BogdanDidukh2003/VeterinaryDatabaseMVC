@@ -2,13 +2,15 @@ package ua.iot.lviv.view;
 
 import ua.iot.lviv.controller.implementation.*;
 import ua.iot.lviv.exception.OwnDateTimeException;
+import ua.iot.lviv.exception.OwnPriceFormatException;
+import ua.iot.lviv.exception.OwnTimeException;
 import ua.iot.lviv.model.*;
-import ua.iot.lviv.model.implementation.*;
-import ua.iot.lviv.persistant.ConnectionManager;
 
 import java.math.BigDecimal;
+import java.sql.Date;
 import java.sql.SQLException;
 import java.sql.Time;
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -18,829 +20,622 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Scanner;
 
-
 public class MyView {
 
-    private final AnimalSpeciesController animalSpeciesController = new AnimalSpeciesController();
-    private final AnimalSpeciesHasTreatmentController animalSpeciesHasTreatmentController = new AnimalSpeciesHasTreatmentController();
     private final ClientController clientController = new ClientController();
-    private final ClientHasPetController clientHasPetController = new ClientHasPetController();
     private final DiagnosisController diagnosisController = new DiagnosisController();
-    private final DiplomaController diplomaController = new DiplomaController();
     private final DoctorController doctorController = new DoctorController();
-    private final DoctorHasTreatmentController doctorHasTreatmentController = new DoctorHasTreatmentController();
     private final PetController petController = new PetController();
     private final ScheduleController scheduleController = new ScheduleController();
     private final TreatmentController treatmentController = new TreatmentController();
     private final VisitController visitController = new VisitController();
 
-    private Map<String, String> menu;
-    private Map<String, Printable> methodsMenu;
-    private static Scanner input = new Scanner(System.in);
+    private final Map<String, String> menu;
+    private final Map<String, Printable> methodsMenu;
+    private static final Scanner INPUT = new Scanner(System.in);
 
-    private final String getIdUpdate = "Enter id of entity you want to update: ";
-    private final String getIdDelete = "Enter id of entity you want to delete: ";
+    private final static String getIdUpdate = "Enter id of entity you want to update: ";
+    private final static String getIdDelete = "Enter id of entity you want to delete: ";
 
     public MyView() {
         menu = new LinkedHashMap<>();
-        menu.put("11", "11 - get all animal species");
-        menu.put("12", "12 - get animal species by id");
-        menu.put("13", "13 - create new animal species");
-        menu.put("14", "14 - update animal species");
-        menu.put("15", "15 - delete animal species");
 
-        menu.put("21", "21 - get all from animal_species_has_treatment");
-        menu.put("22", "22 - get from animal_species_has_treatment by id");
-        menu.put("23", "23 - create new animal_species_has_treatment");
-        menu.put("24", "24 - update animal_species_has_treatment");
-        menu.put("25", "25 - delete from animal_species_has_treatment");
+        menu.put("11", "11 - get all clients");
+        menu.put("12", "12 - get client by id");
+        menu.put("13", "13 - create new client");
+        menu.put("14", "14 - update client");
+        menu.put("15", "15 - delete client");
 
-        menu.put("31", "31 - get all clients");
-        menu.put("32", "32 - get client by id");
-        menu.put("33", "33 - create new client");
-        menu.put("34", "34 - update client");
-        menu.put("35", "35 - delete client");
+        menu.put("21", "21 - get all diagnosis");
+        menu.put("22", "22 - get diagnosis by id");
+        menu.put("23", "23 - create new diagnosis");
+        menu.put("24", "24 - update diagnosis");
+        menu.put("25", "25 - delete diagnosis");
 
-        menu.put("41", "41 - get all from client_has_pet");
-        menu.put("42", "42 - get from client_has_pet by id");
-        menu.put("43", "43 - create new client_has_pet");
-        menu.put("44", "44 - update client_has_pet");
-        menu.put("45", "45 - delete from client_has_pet");
+        menu.put("31", "31 - get all doctors");
+        menu.put("32", "32 - get doctor by id");
+        menu.put("33", "33 - create new doctor");
+        menu.put("34", "34 - update doctor");
+        menu.put("35", "35 - delete doctor");
 
-        menu.put("51", "51 - get all diagnosis");
-        menu.put("52", "52 - get diagnosis by id");
-        menu.put("53", "53 - create new diagnosis");
-        menu.put("54", "54 - update diagnosis");
-        menu.put("55", "55 - delete diagnosis");
+        menu.put("41", "41 - get all pets");
+        menu.put("42", "42 - get pet by id");
+        menu.put("43", "43 - create new pet");
+        menu.put("44", "44 - update pet");
+        menu.put("45", "45 - delete pet");
 
-        menu.put("61", "61 - get all diplomas");
-        menu.put("62", "62 - get diploma by id");
-        menu.put("63", "63 - create new diploma");
-        menu.put("64", "64 - update diploma");
-        menu.put("65", "65 - delete diploma");
+        menu.put("51", "51- get schedule");
+        menu.put("52", "52- get from schedule by id");
+        menu.put("53", "53- create new schedule");
+        menu.put("54", "54- update schedule");
+        menu.put("55", "55 - delete schedule");
 
-        menu.put("71", "71 - get all doctors");
-        menu.put("72", "72 - get doctor by id");
-        menu.put("73", "73 - create new doctor");
-        menu.put("74", "74 - update doctor");
-        menu.put("75", "75 - delete doctor");
+        menu.put("61", "61- get all treatments");
+        menu.put("62", "62- get treatment by id");
+        menu.put("63", "63- create new treatment");
+        menu.put("64", "64- update treatment");
+        menu.put("65", "65 - delete treatment");
 
-        menu.put("81", "81 - get all from doctor_has_treatment");
-        menu.put("82", "82 - get from doctor_has_treatment by id");
-        menu.put("83", "83 - create new doctor_has_treatment");
-        menu.put("84", "84 - update doctor_has_treatment");
-        menu.put("85", "85 - delete from doctor_has_treatment");
-
-        menu.put("91", "91 - get all pets");
-        menu.put("92", "92 - get pet by id");
-        menu.put("93", "93 - create new pet");
-        menu.put("94", "94 - update pet");
-        menu.put("95", "95 - delete pet");
-
-        menu.put("101", "101- get schedule");
-        menu.put("102", "102- get from schedule by id");
-        menu.put("103", "103- create new schedule");
-        menu.put("104", "104- update schedule");
-        menu.put("105", "105 - delete schedule");
-
-        menu.put("111", "111- get all treatments");
-        menu.put("112", "112- get treatment by id");
-        menu.put("113", "113- create new treatment");
-        menu.put("114", "114- update treatment");
-        menu.put("115", "115 - delete treatment");
-
-        menu.put("121", "121- get all visits");
-        menu.put("122", "122- get visit by id");
-        menu.put("123", "123- create new visit");
-        menu.put("124", "124- update visit");
-        menu.put("125", "125 - delete visit");
+        menu.put("71", "71- get all visits");
+        menu.put("72", "72- get visit by id");
+        menu.put("73", "73- create new visit");
+        menu.put("74", "74- update visit");
+        menu.put("75", "75 - delete visit");
 
         menu.put("Q", "Q - exit");
 
         methodsMenu = new LinkedHashMap<>();
-        methodsMenu.put("11", this::getAllAnimalSpecies);
-        methodsMenu.put("12", this::getAnimalSpeciesById);
-        methodsMenu.put("13", this::createAnimalSpecies);
-        methodsMenu.put("14", this::updateAnimalSpecies);
-        methodsMenu.put("15", this::deleteAnimalSpecies);
 
-        methodsMenu.put("21", this::getAllAnimalSpeciesHasTreatment);
-        methodsMenu.put("22", this::getAnimalSpeciesHasTreatmentById);
-        methodsMenu.put("23", this::createAnimalSpeciesHasTreatment);
-        methodsMenu.put("24", this::updateAnimalSpeciesHasTreatment);
-        methodsMenu.put("25", this::deleteAnimalSpeciesHasTreatment);
+        methodsMenu.put("11", this::getAllClients);
+        methodsMenu.put("12", this::getClientById);
+        methodsMenu.put("13", this::createClient);
+        methodsMenu.put("14", this::updateClient);
+        methodsMenu.put("15", this::deleteClient);
 
-        methodsMenu.put("31", this::getAllClients);
-        methodsMenu.put("32", this::getClientById);
-        methodsMenu.put("33", this::createClient);
-        methodsMenu.put("34", this::updateClient);
-        methodsMenu.put("35", this::deleteClient);
+        methodsMenu.put("21", this::getAllDiagnoses);
+        methodsMenu.put("22", this::getDiagnosisById);
+        methodsMenu.put("23", this::createDiagnosis);
+        methodsMenu.put("24", this::updateDiagnosis);
+        methodsMenu.put("25", this::deleteDiagnosis);
 
-        methodsMenu.put("41", this::getAllClientHasPet);
-        methodsMenu.put("42", this::getClientHasPetById);
-        methodsMenu.put("43", this::createClientHasPet);
-        methodsMenu.put("44", this::updateClientHasPet);
-        methodsMenu.put("45", this::deleteClientHasPet);
+        methodsMenu.put("31", this::getAllDoctors);
+        methodsMenu.put("32", this::getDoctorById);
+        methodsMenu.put("33", this::createDoctor);
+        methodsMenu.put("34", this::updateDoctor);
+        methodsMenu.put("35", this::deleteDoctor);
 
-        methodsMenu.put("51", this::getAllDiagnoses);
-        methodsMenu.put("52", this::getDiagnosisById);
-        methodsMenu.put("53", this::createDiagnosis);
-        methodsMenu.put("54", this::updateDiagnosis);
-        methodsMenu.put("55", this::deleteDiagnosis);
+        methodsMenu.put("41", this::getAllPets);
+        methodsMenu.put("42", this::getPetById);
+        methodsMenu.put("43", this::createPet);
+        methodsMenu.put("44", this::updatePet);
+        methodsMenu.put("45", this::deletePet);
 
-        methodsMenu.put("61", this::getAllDiplomas);
-        methodsMenu.put("62", this::getDiplomaById);
-        methodsMenu.put("63", this::createDiploma);
-        methodsMenu.put("64", this::updateDiploma);
-        methodsMenu.put("65", this::deleteDiploma);
+        methodsMenu.put("51", this::getAllSchedule);
+        methodsMenu.put("52", this::getScheduleById);
+        methodsMenu.put("53", this::createSchedule);
+        methodsMenu.put("54", this::updateSchedule);
+        methodsMenu.put("55", this::deleteSchedule);
 
-        methodsMenu.put("71", this::getAllDoctors);
-        methodsMenu.put("72", this::getDoctorById);
-        methodsMenu.put("73", this::createDoctor);
-        methodsMenu.put("74", this::updateDoctor);
-        methodsMenu.put("75", this::deleteDoctor);
+        methodsMenu.put("61", this::getAllTreatments);
+        methodsMenu.put("62", this::getTreatmentById);
+        methodsMenu.put("63", this::createTreatment);
+        methodsMenu.put("64", this::updateTreatment);
+        methodsMenu.put("65", this::deleteTreatment);
 
-        methodsMenu.put("81", this::getAllDoctorHasTreatment);
-        methodsMenu.put("82", this::getDoctorHasTreatmentById);
-        methodsMenu.put("83", this::createDoctorHasTreatment);
-        methodsMenu.put("84", this::updateDoctorHasTreatment);
-        methodsMenu.put("85", this::deleteDoctorHasTreatment);
-
-        methodsMenu.put("91", this::getAllPets);
-        methodsMenu.put("92", this::getPetById);
-        methodsMenu.put("93", this::createPet);
-        methodsMenu.put("94", this::updatePet);
-        methodsMenu.put("95", this::deletePet);
-
-        methodsMenu.put("101", this::getAllSchedule);
-        methodsMenu.put("102", this::getScheduleById);
-        methodsMenu.put("103", this::createSchedule);
-        methodsMenu.put("104", this::updateSchedule);
-        methodsMenu.put("105", this::deleteSchedule);
-
-        methodsMenu.put("111", this::getAllTreatments);
-        methodsMenu.put("112", this::getTreatmentById);
-        methodsMenu.put("113", this::createTreatment);
-        methodsMenu.put("114", this::updateTreatment);
-        methodsMenu.put("115", this::deleteTreatment);
-
-        methodsMenu.put("121", this::getAllVisits);
-        methodsMenu.put("122", this::getVisitById);
-        methodsMenu.put("123", this::createVisit);
-        methodsMenu.put("124", this::updateVisit);
-        methodsMenu.put("125", this::deleteVisit);
-    }
-
-    private void getAllAnimalSpecies() throws SQLException {
-        System.out.println("\tTable 'animal_species'");
-        animalSpeciesController.getAll();
-    }
-
-    private void getAnimalSpeciesById() throws SQLException {
-        System.out.println("Enter id: ");
-        int id = input.nextInt();
-        input.nextLine();
-        animalSpeciesController.getById(id);
-    }
-
-    private void createAnimalSpecies() throws SQLException {
-        System.out.println("Enter id: ");
-        int id = input.nextInt();
-        input.nextLine();
-        System.out.print("Enter species:");
-        String species = input.nextLine();
-        AnimalSpecies entity = new AnimalSpeciesImpl(id, species);
-        animalSpeciesController.create(entity);
-    }
-
-    private void updateAnimalSpecies() throws SQLException {
-        System.out.println(getIdUpdate);
-        int id = input.nextInt();
-        input.nextLine();
-        System.out.print("Enter species:");
-        String species = input.nextLine();
-        AnimalSpecies entity = new AnimalSpeciesImpl(id, species);
-        animalSpeciesController.update(entity);
-    }
-
-    private void deleteAnimalSpecies() throws SQLException {
-        System.out.println(getIdDelete);
-        int id = input.nextInt();
-        input.nextLine();
-        animalSpeciesController.delete(id);
+        methodsMenu.put("71", this::getAllVisits);
+        methodsMenu.put("72", this::getVisitById);
+        methodsMenu.put("73", this::createVisit);
+        methodsMenu.put("74", this::updateVisit);
+        methodsMenu.put("75", this::deleteVisit);
     }
 
     //-----------------------------------------------------------------------
-    private void getAllAnimalSpeciesHasTreatment() throws SQLException {
-        System.out.println("\tTable 'animal_species_has_treatment'");
-        animalSpeciesHasTreatmentController.getAll();
-    }
-
-    private void getAnimalSpeciesHasTreatmentById() throws SQLException {
-        System.out.println("Enter id: ");
-        int id = input.nextInt();
-        input.nextLine();
-        animalSpeciesHasTreatmentController.getById(id);
-    }
-
-    private void createAnimalSpeciesHasTreatment() throws SQLException {
-        System.out.println("Enter id: ");
-        int id = input.nextInt();
-        input.nextLine();
-        System.out.print("Enter animal species id:");
-        int animalSpeciesId = input.nextInt();
-        input.nextLine();
-        System.out.print("Enter treatment id:");
-        int treatmentId = input.nextInt();
-        input.nextLine();
-        AnimalSpeciesHasTreatment entity = new AnimalSpeciesHasTreatmentImpl(id, animalSpeciesId, treatmentId);
-        animalSpeciesHasTreatmentController.create(entity);
-    }
-
-    private void updateAnimalSpeciesHasTreatment() throws SQLException {
-        System.out.println(getIdUpdate);
-        int id = input.nextInt();
-        input.nextLine();
-        System.out.print("Enter animal species id:");
-        int animalSpeciesId = input.nextInt();
-        input.nextLine();
-        System.out.print("Enter treatment id:");
-        int treatmentId = input.nextInt();
-        input.nextLine();
-        AnimalSpeciesHasTreatment entity = new AnimalSpeciesHasTreatmentImpl(id, animalSpeciesId, treatmentId);
-        animalSpeciesHasTreatmentController.update(entity);
-    }
-
-    private void deleteAnimalSpeciesHasTreatment() throws SQLException {
-        System.out.println(getIdDelete);
-        int id = input.nextInt();
-        input.nextLine();
-        animalSpeciesHasTreatmentController.delete(id);
-    }
-
-    //-----------------------------------------------------------------------
-    private void getAllClients() throws SQLException {
+    private void getAllClients() {
         System.out.println("\tTable 'client'");
         clientController.getAll();
     }
 
-    private void getClientById() throws SQLException {
+    private void getClientById() {
         System.out.println("Enter id: ");
-        int id = input.nextInt();
-        input.nextLine();
+        Long id = INPUT.nextLong();
+        INPUT.nextLine();
         clientController.getById(id);
     }
 
-    private void createClient() throws SQLException {
+    private void createClient() {
         System.out.println("Enter id: ");
-        int id = input.nextInt();
-        input.nextLine();
+        Long id = INPUT.nextLong();
+        INPUT.nextLine();
         System.out.print("Enter first name:");
-        String firstName = input.nextLine();
+        String firstName = INPUT.nextLine();
         System.out.print("Enter name:");
-        String name = input.nextLine();
+        String name = INPUT.nextLine();
         System.out.print("Enter last name:");
-        String lastName = input.nextLine();
-        Client entity = new ClientImpl(id, firstName, name, lastName);
+        String lastName = INPUT.nextLine();
+        ClientEntity entity = new ClientEntity(id, firstName, name, lastName);
         clientController.create(entity);
     }
 
-    private void updateClient() throws SQLException {
+    private void updateClient() {
         System.out.println(getIdUpdate);
-        int id = input.nextInt();
-        input.nextLine();
+        Long id = INPUT.nextLong();
+        INPUT.nextLine();
         System.out.print("Enter first name:");
-        String firstName = input.nextLine();
+        String firstName = INPUT.nextLine();
         System.out.print("Enter name:");
-        String name = input.nextLine();
+        String name = INPUT.nextLine();
         System.out.print("Enter last name:");
-        String lastName = input.nextLine();
-        Client entity = new ClientImpl(id, firstName, name, lastName);
-        clientController.update(entity);
+        String lastName = INPUT.nextLine();
+
+        ClientEntity oldEntity = clientController.getEntityById(id);
+        if (oldEntity == null) {
+            return;
+        }
+        oldEntity.setFirstName(firstName);
+        oldEntity.setName(name);
+        oldEntity.setLastName(lastName);
+        clientController.update(oldEntity);
     }
 
-    private void deleteClient() throws SQLException {
+    private void deleteClient() {
         System.out.println(getIdDelete);
-        int id = input.nextInt();
-        input.nextLine();
+        Long id = INPUT.nextLong();
+        INPUT.nextLine();
         clientController.delete(id);
     }
 
     //-----------------------------------------------------------------------
-    private void getAllClientHasPet() throws SQLException {
-        System.out.println("\tTable 'client_has_pet'");
-        clientHasPetController.getAll();
-    }
-
-    private void getClientHasPetById() throws SQLException {
-        System.out.println("Enter id: ");
-        int id = input.nextInt();
-        input.nextLine();
-        clientHasPetController.getById(id);
-    }
-
-    private void createClientHasPet() throws SQLException {
-        System.out.println("Enter id: ");
-        int id = input.nextInt();
-        input.nextLine();
-        System.out.print("Enter client id:");
-        int clientId = input.nextInt();
-        input.nextLine();
-        System.out.print("Enter pet id:");
-        int petId = input.nextInt();
-        input.nextLine();
-        ClientHasPet entity = new ClientHasPetImpl(id, clientId, petId);
-        clientHasPetController.create(entity);
-    }
-
-    private void updateClientHasPet() throws SQLException {
-        System.out.println(getIdUpdate);
-        int id = input.nextInt();
-        input.nextLine();
-        System.out.print("Enter client id:");
-        int clientId = input.nextInt();
-        input.nextLine();
-        System.out.print("Enter pet id:");
-        int petId = input.nextInt();
-        input.nextLine();
-        ClientHasPet entity = new ClientHasPetImpl(id, clientId, petId);
-        clientHasPetController.update(entity);
-    }
-
-    private void deleteClientHasPet() throws SQLException {
-        System.out.println(getIdDelete);
-        int id = input.nextInt();
-        input.nextLine();
-        clientHasPetController.delete(id);
-    }
-
-    //-----------------------------------------------------------------------
-    private void getAllDiagnoses() throws SQLException {
+    private void getAllDiagnoses() {
         System.out.println("\tTable 'diagnosis'");
         diagnosisController.getAll();
     }
 
-    private void getDiagnosisById() throws SQLException {
+    private void getDiagnosisById() {
         System.out.println("Enter id: ");
-        int id = input.nextInt();
-        input.nextLine();
+        Long id = INPUT.nextLong();
+        INPUT.nextLine();
         diagnosisController.getById(id);
     }
 
-    private void createDiagnosis() throws SQLException {
+    private void createDiagnosis() {
         System.out.println("Enter id: ");
-        int id = input.nextInt();
-        input.nextLine();
+        Long id = INPUT.nextLong();
+        INPUT.nextLine();
         System.out.print("Enter diagnosis:");
-        String diagnosis = input.nextLine();
+        String diagnosis = INPUT.nextLine();
         System.out.print("Enter treatment:");
-        String treatment = input.nextLine();
-        Diagnosis entity = new DiagnosisImpl(id, diagnosis, treatment);
+        String treatment = INPUT.nextLine();
+        DiagnosisEntity entity = new DiagnosisEntity(id, diagnosis, treatment);
         diagnosisController.create(entity);
     }
 
-    private void updateDiagnosis() throws SQLException {
+    private void updateDiagnosis() {
         System.out.println(getIdUpdate);
-        int id = input.nextInt();
-        input.nextLine();
+        Long id = INPUT.nextLong();
+        INPUT.nextLine();
         System.out.print("Enter diagnosis:");
-        String diagnosis = input.nextLine();
+        String diagnosis = INPUT.nextLine();
         System.out.print("Enter treatment:");
-        String treatment = input.nextLine();
-        Diagnosis entity = new DiagnosisImpl(id, diagnosis, treatment);
+        String treatment = INPUT.nextLine();
+        DiagnosisEntity entity = new DiagnosisEntity(id, diagnosis, treatment);
+
+        DiagnosisEntity oldEntity = diagnosisController.getEntityById(id);
+        if (oldEntity == null) {
+            return;
+        }
+        oldEntity.setDiagnosis(diagnosis);
+        oldEntity.setTreatment(treatment);
         diagnosisController.update(entity);
     }
 
-    private void deleteDiagnosis() throws SQLException {
+    private void deleteDiagnosis() {
         System.out.println(getIdDelete);
-        int id = input.nextInt();
-        input.nextLine();
+        Long id = INPUT.nextLong();
+        INPUT.nextLine();
         diagnosisController.delete(id);
     }
 
     //-----------------------------------------------------------------------
-    private void getAllDiplomas() throws SQLException {
-        System.out.println("\tTable 'diploma'");
-        diplomaController.getAll();
-    }
-
-    private void getDiplomaById() throws SQLException {
-        System.out.println("Enter id: ");
-        int id = input.nextInt();
-        input.nextLine();
-        diplomaController.getById(id);
-    }
-
-    private void createDiploma() throws SQLException, DateTimeParseException {
-        System.out.println("Enter id: ");
-        int id = input.nextInt();
-        input.nextLine();
-        System.out.println("Enter university:");
-        String university = input.nextLine();
-        System.out.println("Enter date in format: MM/dd/yyyy, example: \"07/28/2011\":");
-        String dateStr = input.nextLine();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
-        LocalDate date = LocalDate.parse(dateStr, formatter);
-        System.out.println("Enter seria:");
-        String seria = input.nextLine();
-        System.out.println("Enter number:");
-        String number = input.nextLine();
-        System.out.println("Enter doctor id: ");
-        int doctorId = input.nextInt();
-        input.nextLine();
-        Diploma entity = new DiplomaImpl(id, university, date, seria, number, doctorId);
-        diplomaController.create(entity);
-    }
-
-    private void updateDiploma() throws SQLException, DateTimeParseException {
-        System.out.println(getIdUpdate);
-        int id = input.nextInt();
-        input.nextLine();
-        System.out.println("Enter university:");
-        String university = input.nextLine();
-        System.out.println("Enter date in format: MM/dd/yyyy, example: \"07/28/2011\":");
-        String dateStr = input.nextLine();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
-        LocalDate date = LocalDate.parse(dateStr, formatter);
-        System.out.println("Enter seria:");
-        String seria = input.nextLine();
-        System.out.print("Enter number:");
-        String number = input.nextLine();
-        System.out.println("Enter doctor id: ");
-        int doctorId = input.nextInt();
-        input.nextLine();
-        Diploma entity = new DiplomaImpl(id, university, date, seria, number, doctorId);
-        diplomaController.update(entity);
-    }
-
-    private void deleteDiploma() throws SQLException {
-        System.out.println(getIdDelete);
-        int id = input.nextInt();
-        input.nextLine();
-        diplomaController.delete(id);
-    }
-
-    //-----------------------------------------------------------------------
-    private void getAllDoctors() throws SQLException {
+    private void getAllDoctors() {
         System.out.println("\tTable 'doctor'");
         doctorController.getAll();
     }
 
-    private void getDoctorById() throws SQLException {
+    private void getDoctorById() {
         System.out.println("Enter id: ");
-        int id = input.nextInt();
-        input.nextLine();
+        Long id = INPUT.nextLong();
+        INPUT.nextLine();
         doctorController.getById(id);
     }
 
-    private void createDoctor() throws SQLException {
+    private void createDoctor() {
         System.out.println("Enter id: ");
-        int id = input.nextInt();
-        input.nextLine();
-        System.out.print("Enter first name:");
-        String firstName = input.nextLine();
-        System.out.print("Enter name:");
-        String name = input.nextLine();
-        System.out.print("Enter last name:");
-        String lastName = input.nextLine();
+        Long id = INPUT.nextLong();
+        INPUT.nextLine();
+        System.out.println("Enter first name:");
+        String firstName = INPUT.nextLine();
+        System.out.println("Enter name:");
+        String name = INPUT.nextLine();
+        System.out.println("Enter last name:");
+        String lastName = INPUT.nextLine();
         System.out.println("Enter year of birth:");
-        int yearOfBirth = input.nextInt();
-        input.nextLine();
-        System.out.print("Enter speciality:");
-        String speciality = input.nextLine();
-        Doctor entity = new DoctorImpl(id, firstName, name, lastName, yearOfBirth, speciality);
+        int yearOfBirth = INPUT.nextInt();
+        INPUT.nextLine();
+        System.out.println("Enter speciality:");
+        String speciality = INPUT.nextLine();
+        DoctorEntity entity = new DoctorEntity(id, firstName, name, lastName, yearOfBirth, speciality);
         doctorController.create(entity);
     }
 
-    private void updateDoctor() throws SQLException {
+    private void updateDoctor() {
         System.out.println(getIdUpdate);
-        int id = input.nextInt();
-        input.nextLine();
-        System.out.print("Enter first name:");
-        String firstName = input.nextLine();
-        System.out.print("Enter name:");
-        String name = input.nextLine();
-        System.out.print("Enter last name:");
-        String lastName = input.nextLine();
+        Long id = INPUT.nextLong();
+        INPUT.nextLine();
+        System.out.println("Enter first name:");
+        String firstName = INPUT.nextLine();
+        System.out.println("Enter name:");
+        String name = INPUT.nextLine();
+        System.out.println("Enter last name:");
+        String lastName = INPUT.nextLine();
         System.out.println("Enter year of birth:");
-        int yearOfBirth = input.nextInt();
-        input.nextLine();
-        System.out.print("Enter speciality:");
-        String speciality = input.nextLine();
-        Doctor entity = new DoctorImpl(id, firstName, name, lastName, yearOfBirth, speciality);
-        doctorController.update(entity);
+        int yearOfBirth = INPUT.nextInt();
+        INPUT.nextLine();
+        System.out.println("Enter speciality:");
+        String speciality = INPUT.nextLine();
+
+        DoctorEntity oldEntity = doctorController.getEntityById(id);
+        if (oldEntity == null) {
+            return;
+        }
+        oldEntity.setFirstName(firstName);
+        oldEntity.setName(name);
+        oldEntity.setLastName(lastName);
+        oldEntity.setYearOfBirth(yearOfBirth);
+        oldEntity.setSpeciality(speciality);
+        doctorController.update(oldEntity);
     }
 
-    private void deleteDoctor() throws SQLException {
+    private void deleteDoctor() {
         System.out.println(getIdDelete);
-        int id = input.nextInt();
-        input.nextLine();
+        Long id = INPUT.nextLong();
+        INPUT.nextLine();
         doctorController.delete(id);
     }
 
     //-----------------------------------------------------------------------
-    private void getAllDoctorHasTreatment() throws SQLException {
-        System.out.println("\tTable 'doctor_has_treatment'");
-        doctorHasTreatmentController.getAll();
-    }
-
-    private void getDoctorHasTreatmentById() throws SQLException {
-        System.out.println("Enter id: ");
-        int id = input.nextInt();
-        input.nextLine();
-        doctorHasTreatmentController.getById(id);
-    }
-
-    private void createDoctorHasTreatment() throws SQLException {
-        System.out.println("Enter id: ");
-        int id = input.nextInt();
-        input.nextLine();
-        System.out.print("Enter doctor id:");
-        int doctorId = input.nextInt();
-        input.nextLine();
-        System.out.print("Enter treatment id:");
-        int treatmentId = input.nextInt();
-        input.nextLine();
-        DoctorHasTreatment entity = new DoctorHasTreatmentImpl(id, doctorId, treatmentId);
-        doctorHasTreatmentController.create(entity);
-    }
-
-    private void updateDoctorHasTreatment() throws SQLException {
-        System.out.println(getIdUpdate);
-        int id = input.nextInt();
-        input.nextLine();
-        System.out.print("Enter doctor id:");
-        int doctorId = input.nextInt();
-        input.nextLine();
-        System.out.print("Enter treatment id:");
-        int treatmentId = input.nextInt();
-        input.nextLine();
-        DoctorHasTreatment entity = new DoctorHasTreatmentImpl(id, doctorId, treatmentId);
-        doctorHasTreatmentController.update(entity);
-    }
-
-    private void deleteDoctorHasTreatment() throws SQLException {
-        System.out.println(getIdDelete);
-        int id = input.nextInt();
-        input.nextLine();
-        doctorHasTreatmentController.delete(id);
-    }
-
-    //-----------------------------------------------------------------------
-    private void getAllPets() throws SQLException {
+    private void getAllPets() {
         System.out.println("\tTable 'pet'");
         petController.getAll();
     }
 
-    private void getPetById() throws SQLException {
+    private void getPetById() {
         System.out.println("Enter id: ");
-        int id = input.nextInt();
-        input.nextLine();
+        Long id = INPUT.nextLong();
+        INPUT.nextLine();
         petController.getById(id);
     }
 
-    private void createPet() throws SQLException {
+    private void createPet() throws DateTimeParseException {
         System.out.println("Enter id: ");
-        int id = input.nextInt();
-        input.nextLine();
-        System.out.print("Enter species id:");
-        int speciesId = input.nextInt();
-        input.nextLine();
+        Long id = INPUT.nextLong();
+        INPUT.nextLine();
+        System.out.println("Enter animal species:");
+        String animalSpecies = INPUT.nextLine();
         System.out.println("Enter name:");
-        String name = input.nextLine();
-        System.out.print("Enter weight in kg:");
-        int weightInKg = input.nextInt();
-        input.nextLine();
-        System.out.print("Enter length in cm:");
-        int lengthInCm = input.nextInt();
-        input.nextLine();
+        String name = INPUT.nextLine();
+        System.out.println("Enter weight in kg:");
+        int weightInKg = INPUT.nextInt();
+        INPUT.nextLine();
+        System.out.println("Enter length in cm:");
+        int lengthInCm = INPUT.nextInt();
+        INPUT.nextLine();
         System.out.println("Enter date of birth in format: MM/dd/yyyy, example: \"07/28/2011\":");
-        String dateStr = input.nextLine();
+        String dateStr = INPUT.nextLine();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
-        LocalDate date = LocalDate.parse(dateStr, formatter);
-        Pet entity = new PetImpl(id, speciesId, name, weightInKg, lengthInCm, date);
+        LocalDate dateLocalDate = LocalDate.parse(dateStr, formatter);
+        Date date = Date.valueOf(dateLocalDate);
+        System.out.println("Enter client id:");
+        Long clientId = INPUT.nextLong();
+        INPUT.nextLine();
+        ClientEntity client = clientController.getEntityById(clientId);
+        PetEntity entity = new PetEntity(id, animalSpecies, name, weightInKg, lengthInCm, date, client);
         petController.create(entity);
     }
 
-    private void updatePet() throws SQLException, DateTimeParseException {
+    private void updatePet() throws DateTimeParseException {
         System.out.println(getIdUpdate);
-        int id = input.nextInt();
-        input.nextLine();
-        System.out.print("Enter species id:");
-        int speciesId = input.nextInt();
-        input.nextLine();
+        Long id = INPUT.nextLong();
+        INPUT.nextLine();
+        System.out.println("Enter animal species:");
+        String animalSpecies = INPUT.nextLine();
         System.out.println("Enter name:");
-        String name = input.nextLine();
-        System.out.print("Enter weight in kg:");
-        int weightInKg = input.nextInt();
-        input.nextLine();
-        System.out.print("Enter length in cm:");
-        int lengthInCm = input.nextInt();
-        input.nextLine();
+        String name = INPUT.nextLine();
+        System.out.println("Enter weight in kg:");
+        int weightInKg = INPUT.nextInt();
+        INPUT.nextLine();
+        System.out.println("Enter length in cm:");
+        int lengthInCm = INPUT.nextInt();
+        INPUT.nextLine();
         System.out.println("Enter date of birth in format: MM/dd/yyyy, example: \"07/28/2011\":");
-        String dateStr = input.nextLine();
+        String dateStr = INPUT.nextLine();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
-        LocalDate date = LocalDate.parse(dateStr, formatter);
-        Pet entity = new PetImpl(id, speciesId, name, weightInKg, lengthInCm, date);
-        petController.update(entity);
+        LocalDate dateLocalDate = LocalDate.parse(dateStr, formatter);
+        Date date = Date.valueOf(dateLocalDate);
+        System.out.println("Enter client id:");
+        Long clientId = INPUT.nextLong();
+        INPUT.nextLine();
+        ClientEntity client = clientController.getEntityById(clientId);
+
+        PetEntity oldEntity = petController.getEntityById(id);
+        if (oldEntity == null) {
+            return;
+        }
+        oldEntity.setAnimalSpecies(animalSpecies);
+        oldEntity.setName(name);
+        oldEntity.setWeightKg(weightInKg);
+        oldEntity.setLengthCm(lengthInCm);
+        oldEntity.setDateOfBirth(date);
+        oldEntity.setClientByClientId(client);
+        petController.update(oldEntity);
     }
 
-    private void deletePet() throws SQLException {
+    private void deletePet() {
         System.out.println(getIdDelete);
-        int id = input.nextInt();
-        input.nextLine();
+        Long id = INPUT.nextLong();
+        INPUT.nextLine();
         petController.delete(id);
     }
 
     //-----------------------------------------------------------------------
-    private void getAllSchedule() throws SQLException {
+    private void getAllSchedule() {
         System.out.println("\tTable 'schedule'");
         scheduleController.getAll();
     }
 
-    private void getScheduleById() throws SQLException {
+    private void getScheduleById() {
         System.out.println("Enter id: ");
-        int id = input.nextInt();
-        input.nextLine();
+        Long id = INPUT.nextLong();
+        INPUT.nextLine();
         scheduleController.getById(id);
     }
 
-    private void createSchedule() throws SQLException {
+    private void createSchedule() throws OwnTimeException {
         System.out.println("Enter id: ");
-        int id = input.nextInt();
-        input.nextLine();
-        System.out.println("Enter doctor id: ");
-        int doctorId = input.nextInt();
-        input.nextLine();
-        System.out.println("Enter time of start in format: HH:mm:ss, example: \"10:45:00\"::");
-        String timeStartStr = input.nextLine();
-        Time timeStart = Time.valueOf(timeStartStr);
-        System.out.println("Enter time of end in format: HH:mm:ss, example: \"18:45:00\"::");
-        String timeEndStr = input.nextLine();
-        Time timeEnd = Time.valueOf(timeEndStr);
+        Long id = INPUT.nextLong();
+        INPUT.nextLine();
+        Time timeStart;
+        Time timeEnd;
+        try {
+            System.out.println("Enter time of start in format: HH:mm:ss, example: \"10:45:00\":");
+            String timeStartStr = INPUT.nextLine();
+            timeStart = Time.valueOf(timeStartStr);
+            System.out.println("Enter time of end in format: HH:mm:ss, example: \"18:45:00\":");
+            String timeEndStr = INPUT.nextLine();
+            timeEnd = Time.valueOf(timeEndStr);
+        } catch (Exception e) {
+            throw new OwnTimeException("own time exception!");
+        }
         System.out.println("Enter week day:");
-        String weekDay = input.nextLine();
-        Schedule entity = new ScheduleImpl(id, doctorId, timeStart, timeEnd, weekDay);
+        String weekDay = INPUT.nextLine();
+        System.out.println("Enter doctor id:");
+        Long doctorId = INPUT.nextLong();
+        INPUT.nextLine();
+        DoctorEntity doctor = doctorController.getEntityById(doctorId);
+        ScheduleEntity entity = new ScheduleEntity(id, timeStart, timeEnd, weekDay, doctor);
         scheduleController.create(entity);
     }
 
-    private void updateSchedule() throws SQLException {
+    private void updateSchedule() throws OwnTimeException {
         System.out.println(getIdUpdate);
-        int id = input.nextInt();
-        input.nextLine();
-        System.out.println("Enter doctor id: ");
-        int doctorId = input.nextInt();
-        input.nextLine();
-        System.out.println("Enter time of start in format: HH:mm:ss, example: \"10:45:00\":");
-        String timeStartStr = input.nextLine();
-        Time timeStart = Time.valueOf(timeStartStr);
-        System.out.println("Enter time of end in format: HH:mm:ss, example: \"18:45:00\":");
-        String timeEndStr = input.nextLine();
-        Time timeEnd = Time.valueOf(timeEndStr);
+        Long id = INPUT.nextLong();
+        INPUT.nextLine();
+        Time timeStart;
+        Time timeEnd;
+        try {
+            System.out.println("Enter time of start in format: HH:mm:ss, example: \"10:45:00\":");
+            String timeStartStr = INPUT.nextLine();
+            timeStart = Time.valueOf(timeStartStr);
+            System.out.println("Enter time of end in format: HH:mm:ss, example: \"18:45:00\":");
+            String timeEndStr = INPUT.nextLine();
+            timeEnd = Time.valueOf(timeEndStr);
+        } catch (Exception e) {
+            throw new OwnTimeException("own time exception!");
+        }
         System.out.println("Enter week day:");
-        String weekDay = input.nextLine();
-        Schedule entity = new ScheduleImpl(id, doctorId, timeStart, timeEnd, weekDay);
-        scheduleController.update(entity);
+        String weekDay = INPUT.nextLine();
+        System.out.println("Enter doctor id:");
+        Long doctorId = INPUT.nextLong();
+        INPUT.nextLine();
+        DoctorEntity doctor = doctorController.getEntityById(doctorId);
+
+        ScheduleEntity oldEntity = scheduleController.getEntityById(id);
+        if (oldEntity == null) {
+            return;
+        }
+        oldEntity.setTimeStart(timeStart);
+        oldEntity.setTimeEnd(timeEnd);
+        oldEntity.setWeekDay(weekDay);
+        oldEntity.setDoctorByDoctorId(doctor);
+        scheduleController.update(oldEntity);
     }
 
-    private void deleteSchedule() throws SQLException {
+    private void deleteSchedule() {
         System.out.println(getIdDelete);
-        int id = input.nextInt();
-        input.nextLine();
+        Long id = INPUT.nextLong();
+        INPUT.nextLine();
         scheduleController.delete(id);
     }
 
     //-----------------------------------------------------------------------
-    private void getAllTreatments() throws SQLException {
+    private void getAllTreatments() {
         System.out.println("\tTable 'treatment'");
         treatmentController.getAll();
     }
 
-    private void getTreatmentById() throws SQLException {
+    private void getTreatmentById() {
         System.out.println("Enter id: ");
-        int id = input.nextInt();
-        input.nextLine();
+        Long id = INPUT.nextLong();
+        INPUT.nextLine();
         treatmentController.getById(id);
     }
 
-    private void createTreatment() throws SQLException {
+    private void createTreatment() throws OwnPriceFormatException {
         System.out.println("Enter id: ");
-        int id = input.nextInt();
-        input.nextLine();
+        Long id = INPUT.nextLong();
+        INPUT.nextLine();
         System.out.println("Enter name:");
-        String name = input.nextLine();
+        String name = INPUT.nextLine();
         System.out.println("Enter description:");
-        String description = input.nextLine();
+        String description = INPUT.nextLine();
         System.out.println("Enter price in USD in format \"####,##\", example: \"55,25\", \"255,5\":");
-        BigDecimal priceUSD = input.nextBigDecimal();
-        input.nextLine();
-        Treatment entity = new TreatmentImpl(id, name, description, priceUSD);
+        BigDecimal priceUSD;
+        try {
+            priceUSD = INPUT.nextBigDecimal();
+            INPUT.nextLine();
+        } catch (Exception e) {
+            INPUT.nextLine();
+            throw new OwnPriceFormatException("own price format exception!");
+        }
+        TreatmentEntity entity = new TreatmentEntity(id, name, description, priceUSD);
         treatmentController.create(entity);
     }
 
-    private void updateTreatment() throws SQLException {
+    private void updateTreatment() throws OwnPriceFormatException {
         System.out.println(getIdUpdate);
-        int id = input.nextInt();
-        input.nextLine();
+        Long id = INPUT.nextLong();
+        INPUT.nextLine();
         System.out.println("Enter name:");
-        String name = input.nextLine();
+        String name = INPUT.nextLine();
         System.out.println("Enter description:");
-        String description = input.nextLine();
+        String description = INPUT.nextLine();
         System.out.println("Enter price in USD in format \"####,##\", example: \"55,25\", \"255,5\":");
-        BigDecimal priceUSD = input.nextBigDecimal();
-        input.nextLine();
-        Treatment entity = new TreatmentImpl(id, name, description, priceUSD);
-        treatmentController.update(entity);
+        BigDecimal priceUSD;
+        try {
+            priceUSD = INPUT.nextBigDecimal();
+            INPUT.nextLine();
+        } catch (Exception e) {
+            INPUT.nextLine();
+            throw new OwnPriceFormatException("own price format exception!");
+        }
+
+        TreatmentEntity oldEntity = treatmentController.getEntityById(id);
+        if (oldEntity == null) {
+            return;
+        }
+        oldEntity.setName(name);
+        oldEntity.setDescription(description);
+        oldEntity.setPriceUsd(priceUSD);
+        treatmentController.update(oldEntity);
     }
 
-    private void deleteTreatment() throws SQLException {
+    private void deleteTreatment() {
         System.out.println(getIdDelete);
-        int id = input.nextInt();
-        input.nextLine();
+        Long id = INPUT.nextLong();
+        INPUT.nextLine();
         treatmentController.delete(id);
     }
 
     //-----------------------------------------------------------------------
-    private void getAllVisits() throws SQLException {
+    private void getAllVisits() {
         System.out.println("\tTable 'visit'");
         visitController.getAll();
     }
 
-    private void getVisitById() throws SQLException {
+    private void getVisitById() {
         System.out.println("Enter id: ");
-        int id = input.nextInt();
-        input.nextLine();
+        Long id = INPUT.nextLong();
+        INPUT.nextLine();
         visitController.getById(id);
     }
 
-    private void createVisit() throws SQLException, OwnDateTimeException {
+    private void createVisit() throws OwnDateTimeException {
         System.out.println("Enter id: ");
-        int id = input.nextInt();
-        input.nextLine();
+        Long id = INPUT.nextLong();
+        INPUT.nextLine();
         System.out.println("Enter date and time in format: MM/dd/yyyy HH:mm, example: \"07/28/2011 09:30\":");
-        String dateTimeStr = input.nextLine();
+        String dateTimeStr = INPUT.nextLine();
+        Timestamp timestamp;
         try {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm");
             LocalDateTime dateTime = LocalDateTime.parse(dateTimeStr, formatter);
-            System.out.println("Enter client_has_pet id:");
-            int clientHasPetId = input.nextInt();
-            input.nextLine();
-            System.out.println("Enter treatment id:");
-            int treatmentId = input.nextInt();
-            input.nextLine();
-            System.out.println("Enter schedule id:");
-            int scheduleId = input.nextInt();
-            input.nextLine();
-            System.out.println("Enter diagnosis id:");
-            int diagnosisId = input.nextInt();
-            input.nextLine();
-            Visit entity = new VisitImpl(id, dateTime, clientHasPetId, treatmentId, scheduleId, diagnosisId);
-            visitController.create(entity);
+            timestamp = Timestamp.valueOf(dateTime);
         } catch (DateTimeParseException e) {
             throw new OwnDateTimeException("DateTime format is incorrect!");
         }
+        System.out.println("Enter pet id:");
+        Long petId = INPUT.nextLong();
+        INPUT.nextLine();
+        System.out.println("Enter treatment id:");
+        Long treatmentId = INPUT.nextLong();
+        INPUT.nextLine();
+        System.out.println("Enter schedule id:");
+        Long scheduleId = INPUT.nextLong();
+        INPUT.nextLine();
+        System.out.println("Enter diagnosis id:");
+        Long diagnosisId = INPUT.nextLong();
+        INPUT.nextLine();
+
+        PetEntity pet = petController.getEntityById(petId);
+        TreatmentEntity treatment = treatmentController.getEntityById(treatmentId);
+        ScheduleEntity schedule = scheduleController.getEntityById(scheduleId);
+        DiagnosisEntity diagnosis = diagnosisController.getEntityById(diagnosisId);
+
+        VisitEntity entity = new VisitEntity(id, timestamp, pet, treatment, schedule, diagnosis);
+        visitController.create(entity);
     }
 
-    private void updateVisit() throws SQLException, OwnDateTimeException {
+    private void updateVisit() throws OwnDateTimeException {
         System.out.println(getIdUpdate);
-        int id = input.nextInt();
-        input.nextLine();
+        Long id = INPUT.nextLong();
+        INPUT.nextLine();
         System.out.println("Enter date and time in format: MM/dd/yyyy HH:mm, example: \"07/28/2011 09:30\":");
-        String dateTimeStr = input.nextLine();
+        String dateTimeStr = INPUT.nextLine();
+        Timestamp timestamp;
         try {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm");
             LocalDateTime dateTime = LocalDateTime.parse(dateTimeStr, formatter);
-            System.out.println("Enter client_has_pet id:");
-            int clientHasPetId = input.nextInt();
-            input.nextLine();
-            System.out.println("Enter treatment id:");
-            int treatmentId = input.nextInt();
-            input.nextLine();
-            System.out.println("Enter schedule id:");
-            int scheduleId = input.nextInt();
-            input.nextLine();
-            System.out.println("Enter diagnosis id:");
-            int diagnosisId = input.nextInt();
-            input.nextLine();
-            Visit entity = new VisitImpl(id, dateTime, clientHasPetId, treatmentId, scheduleId, diagnosisId);
-            visitController.update(entity);
+            timestamp = Timestamp.valueOf(dateTime);
         } catch (DateTimeParseException e) {
             throw new OwnDateTimeException("DateTime format is incorrect!");
         }
+        System.out.println("Enter pet id:");
+        Long petId = INPUT.nextLong();
+        INPUT.nextLine();
+        System.out.println("Enter treatment id:");
+        Long treatmentId = INPUT.nextLong();
+        INPUT.nextLine();
+        System.out.println("Enter schedule id:");
+        Long scheduleId = INPUT.nextLong();
+        INPUT.nextLine();
+        System.out.println("Enter diagnosis id:");
+        Long diagnosisId = INPUT.nextLong();
+        INPUT.nextLine();
+
+        PetEntity pet = petController.getEntityById(petId);
+        TreatmentEntity treatment = treatmentController.getEntityById(treatmentId);
+        ScheduleEntity schedule = scheduleController.getEntityById(scheduleId);
+        DiagnosisEntity diagnosis = diagnosisController.getEntityById(diagnosisId);
+
+        VisitEntity oldEntity = visitController.getEntityById(id);
+        if (oldEntity == null) {
+            return;
+        }
+        oldEntity.setDateTime(timestamp);
+        oldEntity.setPetByPetId(pet);
+        oldEntity.setTreatmentByTreatmentId(treatment);
+        oldEntity.setScheduleByScheduleId(schedule);
+        oldEntity.setDiagnosisByDiagnosisId(diagnosis);
+        visitController.update(oldEntity);
     }
 
-    private void deleteVisit() throws SQLException {
+    private void deleteVisit() {
         System.out.println(getIdDelete);
-        int id = input.nextInt();
-        input.nextLine();
+        Long id = INPUT.nextLong();
+        INPUT.nextLine();
         visitController.delete(id);
     }
 
     //-----------------------------------------------------------------------
-    private void exit() {
-        ConnectionManager.closeConnection();
-        System.out.println("Good Bye!");
-    }
 
     private void showMenu() {
         System.out.println("\nMENU:");
@@ -853,11 +648,11 @@ public class MyView {
         do {
             System.out.println("\nM - show menu");
             System.out.println("Q - exit");
-            String keyMenu = input.nextLine().toUpperCase();
+            String keyMenu = INPUT.nextLine().toUpperCase();
             if (keyMenu.equalsIgnoreCase("M")) {
                 showMenu();
                 System.out.println("Select menu point.");
-                keyMenu = input.nextLine().toUpperCase();
+                keyMenu = INPUT.nextLine().toUpperCase();
                 try {
                     methodsMenu.get(keyMenu).print();
                 } catch (SQLException e) {
@@ -866,24 +661,27 @@ public class MyView {
                     System.out.println("VendorError: " + e.getErrorCode());
                 } catch (NullPointerException ignored) {
                     if (keyMenu.equalsIgnoreCase("Q")) {
-                        exit();
                         break;
                     }
                 } catch (DateTimeParseException e) {
                     System.out.println("Date format is incorrect! Correct format: MM/dd/yyyy, example: \"07/28/2011\"");
                 } catch (InputMismatchException e) {
+                    System.out.println("The input data type does not match the data type in the database!");
+                    INPUT.nextLine();
+                } catch (OwnPriceFormatException e) {
                     System.out.println("Price format is incorrect! Correct format: \"####,##\", example: \"55,25\", \"255,5\"");
-                    input.nextLine();
                 } catch (OwnDateTimeException e) {
                     System.out.println("DateTime format is incorrect! Correct format: MM/dd/yyyy HH:mm, example: \"07/28/2011 09:30\"");
+                } catch (OwnTimeException e) {
+                    System.out.println("Time format is incorrect! Correct format: HH:mm:ss, example: \"10:45:00\"");
                 } catch (Exception e) {
                     e.printStackTrace();
                     System.out.println("\nSomething went wrong. Please try later");
                 }
             } else if (keyMenu.equalsIgnoreCase("Q")) {
-                exit();
                 break;
             }
         } while (true);
     }
+
 }

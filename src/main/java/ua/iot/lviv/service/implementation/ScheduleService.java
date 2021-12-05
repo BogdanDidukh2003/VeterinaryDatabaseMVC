@@ -2,15 +2,15 @@ package ua.iot.lviv.service.implementation;
 
 import ua.iot.lviv.DAO.DAO;
 import ua.iot.lviv.DAO.implementation.ScheduleDAO;
-import ua.iot.lviv.model.Schedule;
+import ua.iot.lviv.model.ScheduleEntity;
 
 
-public class ScheduleService extends ServiceImpl<Schedule> {
-    private final DAO<Schedule, Integer> scheduleDAO = new ScheduleDAO();
+public class ScheduleService extends ServiceImpl<ScheduleEntity, Long> {
+    private final DAO<ScheduleEntity, Long> clientDAO = new ScheduleDAO();
 
     @Override
-    public DAO<Schedule, Integer> getDAO() {
-        return scheduleDAO;
+    public DAO<ScheduleEntity, Long> getDAO() {
+        return clientDAO;
     }
 }
 

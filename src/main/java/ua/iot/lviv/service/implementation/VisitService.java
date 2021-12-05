@@ -2,14 +2,14 @@ package ua.iot.lviv.service.implementation;
 
 import ua.iot.lviv.DAO.DAO;
 import ua.iot.lviv.DAO.implementation.VisitDAO;
-import ua.iot.lviv.model.Visit;
+import ua.iot.lviv.model.VisitEntity;
 
-public class VisitService extends ServiceImpl<Visit> {
-    private final DAO<Visit, Integer> visitDAO = new VisitDAO();
+public class VisitService extends ServiceImpl<VisitEntity, Long> {
+    private final DAO<VisitEntity, Long> clientDAO = new VisitDAO();
 
     @Override
-    public DAO<Visit, Integer> getDAO() {
-        return visitDAO;
+    public DAO<VisitEntity, Long> getDAO() {
+        return clientDAO;
     }
 }
 

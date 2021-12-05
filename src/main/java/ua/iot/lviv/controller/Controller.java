@@ -2,18 +2,19 @@ package ua.iot.lviv.controller;
 
 import ua.iot.lviv.service.Service;
 
-import java.sql.SQLException;
 
-public interface Controller<T> {
-    void getAll() throws SQLException;
+public interface Controller<T, ID> {
+    void getAll();
 
-    void getById(Integer id) throws SQLException;
+    void getById(ID id);
 
-    void create(T entity) throws SQLException;
+    void create(T entity);
 
-    void update(T entity) throws SQLException;
+    void update(T entity);
 
-    void delete(Integer id) throws SQLException;
+    void delete(ID id);
 
-    Service<T> getService();
+    Service<T, ID> getService();
+
+    T getEntityById(ID id);
 }
