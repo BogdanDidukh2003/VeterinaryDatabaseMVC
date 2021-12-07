@@ -1,15 +1,18 @@
 package ua.iot.lviv.service.implementation;
 
-import ua.iot.lviv.DAO.DAO;
-import ua.iot.lviv.DAO.implementation.ClientDAO;
-import ua.iot.lviv.model.ClientEntity;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Service;
+import ua.iot.lviv.domain.implementation.ClientEntity;
+import ua.iot.lviv.repository.ClientRepository;
 
-
-public class ClientService extends ServiceImpl<ClientEntity, Long> {
-    private final DAO<ClientEntity, Long> clientDAO = new ClientDAO();
+@Service
+public class ClientService extends ServiceImpl<ClientEntity> {
+    @Autowired
+    ClientRepository clientRepository;
 
     @Override
-    public DAO<ClientEntity, Long> getDAO() {
-        return clientDAO;
+    public JpaRepository<ClientEntity, Long> getRepository() {
+        return clientRepository;
     }
 }

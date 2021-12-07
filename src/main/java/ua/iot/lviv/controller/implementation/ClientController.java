@@ -1,14 +1,20 @@
 package ua.iot.lviv.controller.implementation;
 
-import ua.iot.lviv.model.ClientEntity;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import ua.iot.lviv.domain.implementation.ClientEntity;
 import ua.iot.lviv.service.Service;
 import ua.iot.lviv.service.implementation.ClientService;
 
-public class ClientController extends ControllerImpl<ClientEntity, Long> {
-    final Service<ClientEntity, Long> service = new ClientService();
+@RestController
+@RequestMapping("/client")
+public class ClientController extends ControllerImp<ClientEntity> {
+    @Autowired
+    ClientService clientService;
 
     @Override
-    public Service<ClientEntity, Long> getService() {
-        return service;
+    public Service<ClientEntity> getService() {
+        return clientService;
     }
 }

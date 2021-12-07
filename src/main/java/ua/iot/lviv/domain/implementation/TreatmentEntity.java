@@ -1,11 +1,13 @@
-package ua.iot.lviv.model;
+package ua.iot.lviv.domain.implementation;
+
+import ua.iot.lviv.domain.Entity;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
 
-@Entity
+@javax.persistence.Entity
 @Table(name = "treatment", schema = "bogdan_didukh", catalog = "")
-public class TreatmentEntity {
+public class TreatmentEntity implements Entity {
     private Long id;
     private String name;
     private String description;
