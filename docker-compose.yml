@@ -1,0 +1,22 @@
+version: "3.9"
+
+services:
+  mysql:
+    image: mysql:latest
+    container_name: mysql
+    env_file:
+      - ./.env
+    ports:
+      - "3306:3306"
+
+  veterinary-service:
+    build: .
+    image: imdamndan2003/veterinary-service
+    container_name: veterinary-service
+    env_file:
+      - ./.env
+    depends_on:
+      - mysql
+    ports:
+      - "8081:8081"
+
